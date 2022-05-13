@@ -1,4 +1,4 @@
-# This workflow requires some setup on the consuming side, see https://www.jenkins.io/doc/developer/publishing/releasing-cd/
+# Note: additional setup is required, see https://www.jenkins.io/redirect/continuous-delivery-of-plugins
 
 name: cd
 on:
