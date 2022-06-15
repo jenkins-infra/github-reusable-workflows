@@ -10,6 +10,12 @@ on:
       MAVEN_TOKEN:
         required: true
         description: Maven token used for deploying the plugin jar to Jenkins Artifactory Repository
+    inputs:
+      java-version:
+        required: false
+        default: '11'
+        description: The Java version to set up. Takes a whole or semver Java version. See examples of supported syntax in the actions/setup-java README file # https://github.com/actions/setup-java#supported-version-syntax
+        type: string
 
 jobs:
   validate:
@@ -53,11 +59,11 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Set up JDK 8
+    - name: Set up JDK ${{ inputs.java-version }}
       uses: actions/setup-java@v3
       with:
         distribution: temurin
-        java-version: 11
+        java-version: ${{ inputs.java-version }}
 
     - name: Release
       uses: jenkins-infra/jenkins-maven-cd-action@v1.3.1
