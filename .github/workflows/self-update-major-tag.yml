@@ -1,5 +1,4 @@
 name: Release
-
 on:
   release:
     types: [published]
@@ -9,7 +8,6 @@ on:
         required: false
         description: The tag to move major version tag to
         default: ""
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -18,7 +16,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-
       - name: version
         id: version
         env:
@@ -39,7 +36,6 @@ jobs:
           echo "tag=${tag}" >> $GITHUB_OUTPUT
           echo "version=${version}" >> $GITHUB_OUTPUT
           echo "major=${major}" >> $GITHUB_OUTPUT
-
       - name: force update major tag
         run: |
           git tag v${{ steps.version.outputs.major }} ${{ steps.version.outputs.tag }} -f
