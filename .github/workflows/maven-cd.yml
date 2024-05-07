@@ -4,7 +4,7 @@ name: maven-cd
 on:
   workflow_call:
     inputs:
-      JAVA_MAJOR_VERSION:
+      java-major-version:
         description: 'The Java major version on which jenkins-maven-cd-action is run'
         default: 11
         required: false
@@ -58,7 +58,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: ${{ inputs.JAVA_MAJOR_VERSION }}
+          java-version: ${{ inputs.java-major-version }}
       - name: Release
         uses: jenkins-infra/jenkins-maven-cd-action@v1.3.3
         with:
