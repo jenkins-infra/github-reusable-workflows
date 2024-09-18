@@ -3,6 +3,14 @@
 name: maven-cd
 on:
   workflow_call:
+    inputs:
+      validate_only:
+        type: string
+        required: false
+        description: |
+          Validate with release drafter only
+          => Skip release job
+        default: false
     secrets:
       MAVEN_USERNAME:
         required: true
@@ -14,7 +22,8 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     outputs:
-      should_release: ${{ steps.verify-ci-status.outputs.result == 'success' && steps.interesting-categories.outputs.interesting == 'true' }}
+      # If this is being changed, then align step log-should_release-details below!
+      should_release: ${{ inputs.validate_only == 'false' && steps.verify-ci-status.outputs.result == 'success' && steps.interesting-categories.outputs.interesting == 'true' }}
     steps:
       - name: Verify CI status
         uses: jenkins-infra/verify-ci-status-action@v1.2.2
@@ -39,6 +48,23 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_DRAFT_BODY: ${{ steps.draft.outputs.body }}
+      - name: Log should_release details
+        id: log-should_release-details
+        run: |
+          echo "================================"
+          echo "Release job filter details:"
+          echo "          VALIDATE_ONLY: ${VALIDATE_ONLY}"
+          echo "              CI_STATUS: ${CI_STATUS}"
+          echo "   INTERESTING_CATEGORY: ${INTERESTING_CATEGORY}"
+          echo "--------------------------------"
+          echo "=>       SHOULD_RELEASE: ${SHOULD_RELEASE}"
+          echo "================================"
+        env:
+          VALIDATE_ONLY: ${{ inputs.validate_only }}
+          CI_STATUS: ${{ steps.verify-ci-status.outputs.result }}
+          INTERESTING_CATEGORY: ${{ steps.interesting-categories.outputs.interesting }}
+          # This must be equal to output should_release of job validate above!
+          SHOULD_RELEASE: ${{ inputs.validate_only == 'false' && steps.verify-ci-status.outputs.result == 'success' && steps.interesting-categories.outputs.interesting == 'true' }}
   release:
     runs-on: ubuntu-latest
     needs: [validate]
