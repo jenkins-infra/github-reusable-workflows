@@ -51,14 +51,17 @@ jobs:
       - name: Log should_release details
         id: log-should_release-details
         run: |
-          echo "================================"
-          echo "Release job filter details:"
-          echo "          VALIDATE_ONLY: ${VALIDATE_ONLY}"
-          echo "              CI_STATUS: ${CI_STATUS}"
-          echo "   INTERESTING_CATEGORY: ${INTERESTING_CATEGORY}"
-          echo "--------------------------------"
-          echo "=>       SHOULD_RELEASE: ${SHOULD_RELEASE}"
-          echo "================================"
+          echo "## Job Filter Summary"                                  >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`"                                                 >> $GITHUB_STEP_SUMMARY
+          echo "================================"                 | tee -a $GITHUB_STEP_SUMMARY
+          echo "Release job filter details:"                      | tee -a $GITHUB_STEP_SUMMARY
+          echo "          VALIDATE_ONLY: ${VALIDATE_ONLY}"        | tee -a $GITHUB_STEP_SUMMARY
+          echo "              CI_STATUS: ${CI_STATUS}"            | tee -a $GITHUB_STEP_SUMMARY
+          echo "   INTERESTING_CATEGORY: ${INTERESTING_CATEGORY}" | tee -a $GITHUB_STEP_SUMMARY
+          echo "--------------------------------"                 | tee -a $GITHUB_STEP_SUMMARY
+          echo "=>       SHOULD_RELEASE: ${SHOULD_RELEASE}"       | tee -a $GITHUB_STEP_SUMMARY
+          echo "================================"                 | tee -a $GITHUB_STEP_SUMMARY
+          echo "\`\`\`"                                                 >> $GITHUB_STEP_SUMMARY
         env:
           VALIDATE_ONLY: ${{ inputs.validate_only }}
           CI_STATUS: ${{ steps.verify-ci-status.outputs.result }}
