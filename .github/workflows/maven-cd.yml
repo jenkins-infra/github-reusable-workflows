@@ -51,7 +51,7 @@ jobs:
       - name: Log should_release details
         id: log-should_release-details
         run: |
-          MD_CODE="\`\`\`"
+          MD_CODE='```'
           GHA_SUMMARY=$(cat << END_OF_SUMMARY
           ## Job Filter Summary
           ${MD_CODE}
