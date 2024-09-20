@@ -51,17 +51,20 @@ jobs:
       - name: Log should_release details
         id: log-should_release-details
         run: |
-          echo "## Job Filter Summary"                                  >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`"                                                 >> $GITHUB_STEP_SUMMARY
-          echo "================================"                 | tee -a $GITHUB_STEP_SUMMARY
-          echo "Release job filter details:"                      | tee -a $GITHUB_STEP_SUMMARY
-          echo "          VALIDATE_ONLY: ${VALIDATE_ONLY}"        | tee -a $GITHUB_STEP_SUMMARY
-          echo "              CI_STATUS: ${CI_STATUS}"            | tee -a $GITHUB_STEP_SUMMARY
-          echo "   INTERESTING_CATEGORY: ${INTERESTING_CATEGORY}" | tee -a $GITHUB_STEP_SUMMARY
-          echo "--------------------------------"                 | tee -a $GITHUB_STEP_SUMMARY
-          echo "=>       SHOULD_RELEASE: ${SHOULD_RELEASE}"       | tee -a $GITHUB_STEP_SUMMARY
-          echo "================================"                 | tee -a $GITHUB_STEP_SUMMARY
-          echo "\`\`\`"                                                 >> $GITHUB_STEP_SUMMARY
+          MD_CODE='```'
+          cat << END_OF_SUMMARY | tee -a $GITHUB_STEP_SUMMARY
+          ## Job Filter Summary
+          ${MD_CODE}
+          ================================
+          Release job filter details:
+                    VALIDATE_ONLY: ${VALIDATE_ONLY}
+                        CI_STATUS: ${CI_STATUS}
+             INTERESTING_CATEGORY: ${INTERESTING_CATEGORY}
+          --------------------------------
+          =>       SHOULD_RELEASE: ${SHOULD_RELEASE}
+          ================================
+          ${MD_CODE}
+          END_OF_SUMMARY
         env:
           VALIDATE_ONLY: ${{ inputs.validate_only }}
           CI_STATUS: ${{ steps.verify-ci-status.outputs.result }}
