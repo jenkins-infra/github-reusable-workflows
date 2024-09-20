@@ -52,7 +52,7 @@ jobs:
         id: log-should_release-details
         run: |
           MD_CODE='```'
-          GHA_SUMMARY=$(cat << END_OF_SUMMARY
+          cat << END_OF_SUMMARY | tee -a $GITHUB_STEP_SUMMARY
           ## Job Filter Summary
           ${MD_CODE}
           ================================
@@ -65,8 +65,6 @@ jobs:
           ================================
           ${MD_CODE}
           END_OF_SUMMARY
-          )
-          echo "${GHA_SUMMARY}" | tee -a $GITHUB_STEP_SUMMARY
         env:
           VALIDATE_ONLY: ${{ inputs.validate_only }}
           CI_STATUS: ${{ steps.verify-ci-status.outputs.result }}
