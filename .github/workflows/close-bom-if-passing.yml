@@ -20,7 +20,7 @@ jobs:
       - name: Download and run script
         run: |
           # TODO switch to main branch after merging
-          gh api 'repos/jglick/github-reusable-workflows/contents/.github/close-bom-if-passing.sh?ref=automerge' --jq .content | base64 -d > close-bom-if-passing.sh
+          gh api 'repos/jglick/github-reusable-workflows/contents/.github/workflows/close-bom-if-passing.sh?ref=automerge' --jq .content | base64 -d > close-bom-if-passing.sh
           chmod +x close-bom-if-passing.sh
           ./close-bom-if-passing.sh
         env:
