@@ -20,7 +20,7 @@ jobs:
       - name: Download and run close-if-passing script
         run: |
           # TODO switch to main branch after merging
-            gh api repos/jenkins-infra/github-reusable-workflows/contents/.github/close-if-passing.sh?ref=automerge \
+            gh api repos/jglick/github-reusable-workflows/contents/.github/close-if-passing.sh?ref=automerge \
             --jq '.content' | base64 -d > close-if-passing.sh
           chmod +x close-if-passing.sh
           ./close-if-passing.sh
