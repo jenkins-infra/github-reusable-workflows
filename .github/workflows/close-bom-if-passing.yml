@@ -1,4 +1,4 @@
-name: Close If Passing
+name: Close BOM update PR if Passing
 
 # To be used with:
 # on:
@@ -17,15 +17,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download and run close-if-passing script
+      - name: Download and run script
         run: |
           # TODO switch to main branch after merging
-            gh api repos/jglick/github-reusable-workflows/contents/.github/close-if-passing.sh?ref=automerge \
-            --jq '.content' | base64 -d > close-if-passing.sh
-          chmod +x close-if-passing.sh
-          ./close-if-passing.sh
+          gh api 'repos/jglick/github-reusable-workflows/contents/.github/close-bom-if-passing.sh?ref=automerge' --jq .content | base64 -d > close-bom-if-passing.sh
+          chmod +x close-bom-if-passing.sh
+          ./close-bom-if-passing.sh
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_EVENT_PATH: ${{ github.event_path }}
           GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
           GITHUB_REPOSITORY: ${{ github.repository }}
