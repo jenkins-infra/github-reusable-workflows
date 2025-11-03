@@ -28,11 +28,7 @@ pr_data=$(gh api graphql -f query='
           associatedPullRequests(first: 1) {
             nodes {
               number
-              labels(first: 10) {
-                nodes {
-                  name
-                }
-              }
+              headRefName
               isDraft
               headRefOid
             }
@@ -45,6 +41,7 @@ pr_data=$(gh api graphql -f query='
 # Extract PR data
 pr_number=$(echo "$pr_data" | jq -r '.data.repository.object.associatedPullRequests.nodes[0].number // empty')
 pr_head_sha=$(echo "$pr_data" | jq -r '.data.repository.object.associatedPullRequests.nodes[0].headRefOid // empty')
+pr_head_ref=$(echo "$pr_data" | jq -r '.data.repository.object.associatedPullRequests.nodes[0].headRefName // empty')
 
 # Exit early if no associated PR found
 if [[ -z "$pr_number" ]]; then
@@ -52,19 +49,18 @@ if [[ -z "$pr_number" ]]; then
   exit 0
 fi
 
-pr_labels=$(echo "$pr_data" | jq -r '.data.repository.object.associatedPullRequests.nodes[0].labels.nodes[].name' | tr '\n' ',' | sed 's/,$//')
 pr_draft=$(echo "$pr_data" | jq -r '.data.repository.object.associatedPullRequests.nodes[0].isDraft // empty')
 
-echo "Labels: $pr_labels"
+echo "Head ref: $pr_head_ref"
 echo "Draft: $pr_draft"
 
-# Check if this PR has the close-if-passing label
-if [[ "$pr_labels" != *"close-if-passing"* ]]; then
-  echo "PR does not have close-if-passing label, exiting"
+# Check if this is a Dependabot or Renovate PR for io.jenkins.tools.bom-bom-* dependencies
+if [[ ! ("$pr_head_ref" =~ ^renovate/io\.jenkins\.tools\.bom-bom- || "$pr_head_ref" =~ ^dependabot/maven/io\.jenkins\.tools\.bom-bom-) ]]; then
+  echo "Not a BOM dependency PR (head ref: $pr_head_ref), exiting"
   exit 0
 fi
 
-echo "PR has close-if-passing label, processing..."
+echo "Processing BOM dependency PR with head ref: $pr_head_ref"
 
 # Verify commit matches the PR head
 if [[ "$check_run_sha" != "$pr_head_sha" ]]; then
@@ -77,7 +73,7 @@ if [[ "$check_run_conclusion" == "success" ]]; then
   echo "CI passed, closing PR #$pr_number"
 
   # Leave a comment and close the PR
-  gh pr comment "$pr_number" --body "✅ CI passed successfully. Closing this PR as requested by the \`close-if-passing\` label." --repo "$GITHUB_REPOSITORY"
+  gh pr comment "$pr_number" --body "✅ CI passed successfully. Closing this PR." --repo "$GITHUB_REPOSITORY"
   gh pr close "$pr_number" --repo "$GITHUB_REPOSITORY"
 
   echo "PR #$pr_number closed due to successful CI"
@@ -85,7 +81,7 @@ else
   echo "CI failed with conclusion: $check_run_conclusion"
 
   # Leave a comment
-  gh pr comment "$pr_number" --body "❌ CI failed with conclusion: \`$check_run_conclusion\`. Converting to ready for review so it can be investigated." --repo "$GITHUB_REPOSITORY"
+  gh pr comment "$pr_number" --body "❌ CI failed with conclusion: \`$check_run_conclusion\`. Please investigate the failure." --repo "$GITHUB_REPOSITORY"
 
   # Convert from draft to ready for review if it's currently a draft
   if [[ "$pr_draft" == "true" ]]; then
