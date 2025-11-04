@@ -1,0 +1,29 @@
+name: Close BOM update PR if Passing
+
+# To be used with:
+# on:
+#   check_run:
+#     types:
+#     - completed
+# permissions:
+#   contents: read
+#   pull-requests: write
+
+on:
+- workflow_call
+
+jobs:
+  handle-ci-status:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download and run script
+        run: |
+          gh api repos/jenkins-infra/github-reusable-workflows/contents/.github/workflows/close-bom-if-passing.sh --jq .content | base64 -d > close-bom-if-passing.sh
+          chmod +x close-bom-if-passing.sh
+          ./close-bom-if-passing.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_EVENT_PATH: ${{ github.event_path }}
+          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
