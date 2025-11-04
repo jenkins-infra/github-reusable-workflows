@@ -68,6 +68,8 @@ if [[ "$check_run_sha" != "$pr_head_sha" ]]; then
   exit 0
 fi
 
+# TODO verify that there is only commit in the PR (presumably from the bot) so we do not close PRs with manual changes
+
 # Handle based on CI conclusion
 if [[ "$check_run_conclusion" == "success" ]]; then
   echo "CI passed, closing PR #$pr_number"
