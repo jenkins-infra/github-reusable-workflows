@@ -15,10 +15,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: act
-      if: ${{ (github.actor == 'renovate[bot]' && (
+      if: ${{ (github.event.pull_request.user.login == 'renovate[bot]' && (
                 startsWith(github.head_ref, 'renovate/org.jenkins-ci.plugins-plugin-')) ||
                 startsWith(github.head_ref, 'renovate/io.jenkins.tools.incrementals-git-changelist-maven-extension-')) ||
-              (github.actor == 'dependabot[bot]' && (
+              (github.event.pull_request.user.login == 'dependabot[bot]' && (
                 startsWith(github.head_ref, 'dependabot/maven/org.jenkins-ci.plugins-plugin-')) ||
                 startsWith(github.head_ref, 'dependabot/maven/io.jenkins.tools.incrementals-git-changelist-maven-extension-')) }}
       run: |
